@@ -1,7 +1,7 @@
-import { ShoppingCartSimple, Heart, MagnifyingGlass, UserCircle } from '@phosphor-icons/react'
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react'
+import { Heart, MagnifyingGlass, ShoppingCartSimple, UserCircle, X } from '@phosphor-icons/react'
+import { motion, useMotionValueEvent, useScroll } from 'motion/react'
 import { useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { brand } from '../../data/site'
 import { cn, money } from '../../lib/format'
 import { useStore } from '../../store/StoreProvider'
@@ -23,8 +23,12 @@ export default function Header() {
   const { scrollY } = useScroll()
   const [scrolled, setScrolled] = useState(false)
   const [query, setQuery] = useState('')
-  const [searchOpen, setSearchOpen] = useState(false)
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  // Search stays open only on the page where it was opened, so navigating closes it
+  const [searchAt, setSearchAt] = useState(null)
+  const searchOpen = searchAt === pathname
+  const setSearchOpen = (open) => setSearchAt(open ? pathname : null)
   useMotionValueEvent(scrollY, 'change', (v) => {
     const next = v > 24
     if (next !== scrolled) setScrolled(next)
@@ -45,46 +49,66 @@ export default function Header() {
             <Logo />
           </Link>
 
-          <nav aria-label="Primary" className="mx-auto hidden items-center gap-0.5 lg:flex">
-            {navLinks.map((l) => (
-              <NavLink key={l.to} to={l.to} className="group relative px-3.5 py-2 text-[14.5px] font-medium text-ink-2 transition-colors hover:text-ink">
-                {({ isActive }) => (
-                  <>
-                    <span className={cn('relative', isActive && 'text-ink')}>{l.label}</span>
-                    {isActive ? (
-                      <motion.span layoutId="nav-underline" className="absolute inset-x-3.5 -bottom-px h-0.5 rounded-full bg-tomato" transition={{ type: 'spring', stiffness: 500, damping: 40 }} />
-                    ) : (
-                      <span className="absolute inset-x-3.5 -bottom-px h-0.5 origin-left scale-x-0 rounded-full bg-ink/20 transition-transform duration-300 group-hover:scale-x-100" />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </nav>
+          {/* Search takes the nav's place in the layout instead of floating over it */}
+          <div className="relative mx-auto hidden min-w-0 flex-1 justify-center lg:flex">
+            {searchOpen ? (
+                <motion.form
+                  role="search"
+                  initial={{ opacity: 0, scaleX: 0.92 }}
+                  animate={{ opacity: 1, scaleX: 1 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    navigate(`/order?q=${encodeURIComponent(query.trim())}`)
+                    setSearchOpen(false)
+                  }}
+                  className="flex w-full max-w-[520px] items-center gap-2 rounded-full border border-line bg-white py-1 pr-1 pl-4 focus-within:border-ink"
+                >
+                  <MagnifyingGlass size={17} weight="bold" className="shrink-0 text-ink-3" aria-hidden />
+                  <input
+                    autoFocus
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Escape' && setSearchOpen(false)}
+                    placeholder="Search pizzas, burgers, drinks…"
+                    aria-label="Search the menu"
+                    className="h-8 min-w-0 flex-1 bg-transparent text-[14.5px] outline-none"
+                  />
+                  <button type="submit" className="h-8 shrink-0 rounded-full bg-ink px-4 text-[13px] font-semibold text-cream">Search</button>
+                  <button type="button" onClick={() => setSearchOpen(false)} aria-label="Close search" className="grid size-8 shrink-0 place-items-center rounded-full text-ink-3 hover:bg-cream-2 hover:text-ink">
+                    <X size={15} weight="bold" />
+                  </button>
+                </motion.form>
+              ) : (
+                <nav aria-label="Primary" className="flex items-center gap-0.5">
+                  {navLinks.map((l) => (
+                    <NavLink key={l.to} to={l.to} className="group relative px-3.5 py-2 text-[14.5px] font-medium whitespace-nowrap text-ink-2 transition-colors hover:text-ink">
+                      {({ isActive }) => (
+                        <>
+                          <span className={cn('relative', isActive && 'text-ink')}>{l.label}</span>
+                          {isActive ? (
+                            <motion.span layoutId="nav-underline" className="absolute inset-x-3.5 -bottom-px h-0.5 rounded-full bg-tomato" transition={{ type: 'spring', stiffness: 500, damping: 40 }} />
+                          ) : (
+                            <span className="absolute inset-x-3.5 -bottom-px h-0.5 origin-left scale-x-0 rounded-full bg-ink/20 transition-transform duration-300 group-hover:scale-x-100" />
+                          )}
+                        </>
+                      )}
+                    </NavLink>
+                  ))}
+                </nav>
+              )}
+          </div>
 
-          <div className="ml-auto flex items-center gap-1 lg:ml-0">
-            <div className="relative">
-              <AnimatePresence>
-                {searchOpen && (
-                  <motion.form
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: 240 }}
-                    exit={{ opacity: 0, width: 0 }}
-                    onSubmit={(e) => {
-                      e.preventDefault()
-                      navigate(`/order?q=${encodeURIComponent(query)}`)
-                      setSearchOpen(false)
-                    }}
-                    className="absolute top-0 right-11 overflow-hidden"
-                  >
-                    <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} onBlur={() => setSearchOpen(false)} placeholder="Search the menu…" aria-label="Search menu" className="h-10 w-full rounded-full border border-line bg-white px-4 text-sm outline-none focus:border-ink" />
-                  </motion.form>
-                )}
-              </AnimatePresence>
-              <button type="button" onClick={() => setSearchOpen((s) => !s)} aria-label="Search" className="grid size-10 place-items-center rounded-full text-ink-2 transition-colors hover:bg-cream-2 hover:text-ink">
-                <MagnifyingGlass size={19} weight="bold" />
-              </button>
-            </div>
+          <div className="ml-auto flex shrink-0 items-center gap-1 lg:ml-0">
+            <button
+              type="button"
+              onClick={() => (window.innerWidth < 1024 ? navigate('/order?focus=search') : setSearchOpen(!searchOpen))}
+              aria-label="Search"
+              aria-expanded={searchOpen}
+              className={cn('grid size-10 place-items-center rounded-full transition-colors hover:bg-cream-2 hover:text-ink', searchOpen ? 'bg-cream-2 text-ink' : 'text-ink-2')}
+            >
+              <MagnifyingGlass size={19} weight="bold" />
+            </button>
             <Link to="/favorites" aria-label={`Favourites (${favorites.length})`} className="relative grid size-10 place-items-center rounded-full text-ink-2 transition-colors hover:bg-cream-2 hover:text-ink">
               <Heart size={19} weight="bold" />
               {favorites.length > 0 && <span className="absolute top-2 right-2 size-1.5 rounded-full bg-tomato" />}

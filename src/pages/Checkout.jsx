@@ -2,6 +2,7 @@ import { AppleLogo, ArrowRight, Bicycle, Check, CreditCard, Lightning, Lock, Mon
 import { AnimatePresence, motion } from 'motion/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { KitchenScreen } from '../components/layout/KitchenStatus'
 import PageHeader from '../components/layout/PageHeader'
 import { Summary } from '../components/product/CartLine'
 import { EmptyState, Field } from '../components/ui/Bits'
@@ -56,7 +57,8 @@ const days = (() => {
 const slots = ['12:00', '12:30', '13:00', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00']
 
 export default function Checkout() {
-  const { cart, totals, user, placeOrder } = useStore()
+  const { cart, totals, user, placeOrder, kitchen } = useStore()
+  const [kitchenAck, setKitchenAck] = useState(false)
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [mode, setMode] = useState('delivery')
@@ -74,6 +76,26 @@ export default function Checkout() {
       <>
         <PageHeader title="Checkout" crumbs={[{ label: 'Checkout' }]} />
         <EmptyState image="/img/slice-olive.webp" title="Nothing to check out" body="Add a few favourites to your cart first." action={<Button to="/order">Browse the menu</Button>} />
+      </>
+    )
+
+  // Kitchen overloaded or closed: explain first and offer schedule / pickup instead of failing silently
+  if (kitchen !== 'open' && !kitchenAck && !placing)
+    return (
+      <>
+        <PageHeader title="Checkout" crumbs={[{ to: '/cart', label: 'Cart' }, { label: 'Checkout' }]} />
+        <div className="container-x">
+          <KitchenScreen
+            onContinue={(choice) => {
+              if (choice === 'schedule') {
+                setWhen('later')
+                setDay(kitchen === 'closed' ? 1 : 0)
+              }
+              if (choice === 'pickup') setMode('pickup')
+              setKitchenAck(true)
+            }}
+          />
+        </div>
       </>
     )
 
@@ -194,7 +216,9 @@ export default function Checkout() {
                   <>
                     <div className="space-y-3" role="radiogroup" aria-label="When">
                       <h2 className="text-[18px]">When do you want it?</h2>
-                      <RadioCard checked={when === 'asap'} onClick={() => setWhen('asap')} icon={Lightning} title="As soon as possible" body={mode === 'delivery' ? 'Arrives in about 25–35 min' : 'Ready in about 15 min'} />
+                      {kitchen !== 'closed' && (
+                        <RadioCard checked={when === 'asap'} onClick={() => setWhen('asap')} icon={Lightning} title="As soon as possible" body={kitchen === 'busy' ? (mode === 'delivery' ? 'Busy right now — about 60–75 min' : 'Busy right now — about 25 min') : mode === 'delivery' ? 'Arrives in about 25–35 min' : 'Ready in about 15 min'} />
+                      )}
                       <RadioCard checked={when === 'later'} onClick={() => setWhen('later')} icon={Storefront} title="Schedule for later" body="Pick a day and 30-minute slot" />
                     </div>
                     <AnimatePresence>

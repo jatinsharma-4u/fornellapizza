@@ -35,7 +35,7 @@ function MenuLine({ product }) {
   return (
     <li data-fly-root className="group relative grid grid-cols-[60px_1fr_auto] items-center gap-4 rounded-2xl p-2 transition-colors hover:bg-white">
       <Link to={`/product/${product.id}`} className="absolute inset-0 z-[2] rounded-2xl" aria-label={product.name} />
-      <span className="relative size-[60px] rounded-xl bg-cream-2">
+      <span className={cn('relative size-[60px] rounded-xl bg-cream-2', product.soldOut && 'opacity-60 grayscale')}>
         <img data-fly-img src={product.image} alt="" loading="lazy" className="img-fit transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" />
       </span>
       <div className="min-w-0">

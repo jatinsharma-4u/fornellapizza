@@ -108,6 +108,14 @@ export default function Order() {
     if (params.get('focus') === 'search') searchRef.current?.focus()
   }, [params])
 
+  // A new header search while already on this page should replace the current query
+  const urlQuery = params.get('q')
+  const [lastUrlQuery, setLastUrlQuery] = useState(urlQuery)
+  if (urlQuery !== lastUrlQuery) {
+    setLastUrlQuery(urlQuery)
+    setQuery(urlQuery ?? '')
+  }
+
   // Any filter change restarts the list from the top of the page
   const filterKey = `${cat}|${tags.join(',')}|${sort}|${maxPrice}|${diet}`
   const firstRun = useRef(true)

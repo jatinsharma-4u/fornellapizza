@@ -16,6 +16,13 @@ export function QuickAdd({ product, className, size = 'md' }) {
   const key = lineKey(product.id, opts)
   const line = cart.find((l) => l.key === key)
 
+  if (product.soldOut)
+    return (
+      <span className={cn('relative z-10 inline-flex h-7 items-center rounded-full bg-cream-3 px-2.5 text-[11px] font-bold tracking-wide text-ink-2 uppercase', className)}>
+        Sold out
+      </span>
+    )
+
   return (
     <div className={cn('relative z-10', className)}>
       <AnimatePresence mode="popLayout" initial={false}>
@@ -72,10 +79,10 @@ export function FavButton({ id, className }) {
 }
 
 /** Image well: the cut-out sits inside a fixed inset box, so nothing can spill outside the card. */
-export function DishImage({ product, className, priority, inset = 'inset-[9%]' }) {
+export function DishImage({ product, className, priority, inset = 'inset-[9%]', showSoldOut = true }) {
   const tall = product.category === 'drinks' || product.category === 'desserts'
   return (
-    <div className={cn('relative overflow-hidden bg-cream-2', className)}>
+    <div className={cn('relative overflow-hidden bg-cream-2', product.soldOut && 'grayscale', className)}>
       <div className={cn('absolute plate-shadow', tall ? 'inset-[7%]' : inset)}>
         <img
           data-fly-img
@@ -85,10 +92,15 @@ export function DishImage({ product, className, priority, inset = 'inset-[9%]' }
           decoding="async"
           className={cn(
             'relative z-[1] size-full object-contain transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)]',
-            product.category === 'pizza' ? 'group-hover:rotate-[10deg] group-hover:scale-[1.04]' : 'group-hover:scale-[1.05]',
+            product.soldOut ? 'opacity-55' : product.category === 'pizza' ? 'group-hover:rotate-[10deg] group-hover:scale-[1.04]' : 'group-hover:scale-[1.05]',
           )}
         />
       </div>
+      {product.soldOut && showSoldOut && (
+        <span className="absolute inset-x-0 top-1/2 z-[3] mx-auto w-fit -translate-y-1/2 rounded-full bg-ink/85 px-3 py-1 text-[11px] font-bold tracking-[0.12em] text-cream uppercase">
+          Sold out
+        </span>
+      )}
     </div>
   )
 }
@@ -96,7 +108,7 @@ export function DishImage({ product, className, priority, inset = 'inset-[9%]' }
 function ProductCard({ product, className, priority }) {
   const tag = product.tags.find((t) => t !== 'veg')
   return (
-    <article data-fly-root className={cn('group relative flex flex-col overflow-hidden rounded-[18px] border border-line/80 bg-white transition-[box-shadow,transform] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lift', className)}>
+    <article data-fly-root aria-disabled={product.soldOut || undefined} className={cn('group relative flex flex-col overflow-hidden rounded-[18px] border border-line/80 bg-white transition-[box-shadow,transform] duration-300 ease-out', product.soldOut ? 'opacity-90' : 'hover:-translate-y-0.5 hover:shadow-lift', className)}>
       <Link to={`/product/${product.id}`} className="absolute inset-0 z-[2]" aria-label={`View ${product.name}`} />
       <div className="relative">
         <DishImage product={product} priority={priority} className="aspect-[6/5]" inset="inset-[5%]" />
@@ -116,7 +128,7 @@ function ProductCard({ product, className, priority }) {
         <h3 className="mt-1 line-clamp-1 font-display text-[15px] leading-snug font-semibold md:text-[16.5px]">{product.name}</h3>
         <p className="line-clamp-1 text-[12px] text-ink-3 md:text-[13px]">{product.short}</p>
         <div className="mt-auto flex flex-wrap items-center justify-between gap-x-1.5 gap-y-1.5 pt-2">
-          <p className="text-[15px] font-bold tabular md:text-[16px]">{money(product.price)}</p>
+          <p className={cn('text-[15px] font-bold tabular md:text-[16px]', product.soldOut && 'text-ink-3 line-through')}>{money(product.price)}</p>
           <QuickAdd product={product} />
         </div>
       </div>
@@ -131,7 +143,7 @@ export const ProductRow = memo(function ProductRow({ product, className }) {
   return (
     <article data-fly-root className={cn('group relative flex items-center gap-3.5 rounded-[18px] border border-line/70 bg-white p-2.5 transition-shadow hover:shadow-soft', className)}>
       <Link to={`/product/${product.id}`} className="absolute inset-0 z-[2] rounded-[18px]" aria-label={`View ${product.name}`} />
-      <DishImage product={product} className="size-[76px] shrink-0 rounded-xl" inset="inset-[6%]" />
+      <DishImage product={product} className="size-[76px] shrink-0 rounded-xl" inset="inset-[6%]" showSoldOut={false} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <h3 className="truncate font-display text-[15.5px] font-semibold">{product.name}</h3>

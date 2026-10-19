@@ -24,6 +24,7 @@ const Legal = lazy(() => import('./pages/Legal'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Confirmation = lazy(() => import('./pages/Confirmation'))
 const Notifications = lazy(() => import('./pages/Notifications'))
+const KitchenStatusPage = lazy(() => import('./pages/KitchenStatusPage'))
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="confirmation/:id" element={<Confirmation />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="help" element={<Faq />} />
+        <Route path="kitchen-status" element={<KitchenStatusPage />} />
         <Route path="faq" element={<Navigate to="/help" replace />} />
         <Route path="privacy" element={<Legal doc="privacy" />} />
         <Route path="terms" element={<Legal doc="terms" />} />

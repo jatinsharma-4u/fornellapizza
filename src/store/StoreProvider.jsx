@@ -15,12 +15,16 @@ const initialState = {
   accounts: [demoUser], // mock "user database" for the demo sign-in
   orders: pastOrders,
   notificationsRead: false,
+  kitchen: 'open', // 'open' | 'busy' | 'closed' — simulated kitchen status for the demo
 }
 
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? { ...initialState, ...JSON.parse(raw) } : initialState
+    const state = raw ? { ...initialState, ...JSON.parse(raw) } : initialState
+    // Demo hook: ?kitchen=busy|closed|open in any URL switches the simulated kitchen status
+    const k = new URLSearchParams(window.location.search).get('kitchen')
+    return ['open', 'busy', 'closed'].includes(k) ? { ...state, kitchen: k } : state
   } catch {
     return initialState
   }
@@ -62,6 +66,8 @@ function reducer(state, action) {
       return { ...state, orders: [action.order, ...state.orders] }
     case 'orders/cancel':
       return { ...state, orders: state.orders.map((o) => (o.id === action.id ? { ...o, status: 'cancelled' } : o)) }
+    case 'kitchen/set':
+      return { ...state, kitchen: action.status }
     case 'notifications/read':
       return { ...state, notificationsRead: true }
     default:
@@ -115,6 +121,7 @@ export function StoreProvider({ children }) {
       deleteAccount: () => dispatch({ type: 'auth/delete' }),
       cancelOrder: (id) => dispatch({ type: 'orders/cancel', id }),
       markNotificationsRead: () => dispatch({ type: 'notifications/read' }),
+      setKitchen: (status) => dispatch({ type: 'kitchen/set', status }),
     }),
     [],
   )

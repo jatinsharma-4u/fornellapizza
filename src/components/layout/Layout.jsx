@@ -5,6 +5,7 @@ import BottomNav from './BottomNav'
 import CartDrawer from './CartDrawer'
 import Footer from './Footer'
 import Header from './Header'
+import { KitchenBanner } from './KitchenStatus'
 import { initSmoothScroll, scrollToTop } from '../../lib/smoothScroll'
 
 // Routes that own a sticky bottom action bar on mobile, so the tab bar steps aside.
@@ -46,6 +47,7 @@ export default function Layout() {
       <a href="#main" className="sr-only z-[100] rounded-full bg-ink px-4 py-2 text-cream focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
         Skip to content
       </a>
+      {!isBare && <KitchenBanner />}
       {!isBare && <Header />}
       <AnimatePresence mode="wait" onExitComplete={scrollToTop}>
         <motion.main

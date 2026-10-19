@@ -110,7 +110,7 @@ function ProductView({ product }) {
         <div className="grid md:grid-cols-2 md:gap-10 lg:gap-16">
           {/* Stage */}
           <div className="md:sticky md:top-24 md:self-start">
-            <div className="relative bg-cream-2 pt-16 pb-12 md:rounded-[24px] md:pt-10 md:pb-10">
+            <div className={cn('relative bg-cream-2 pt-16 pb-12 md:rounded-[24px] md:pt-10 md:pb-10', product.soldOut && 'grayscale')}>
               <div className="relative mx-auto aspect-square w-[74%] max-w-[420px]">
                 <div className="absolute inset-0 rounded-full border border-dashed border-ink/10" aria-hidden />
                 <motion.img
@@ -149,6 +149,11 @@ function ProductView({ product }) {
                 </div>
               </div>
               <p className="mt-2 text-[15px] text-ink-2">{product.short}</p>
+              {product.soldOut && (
+                <p role="status" className="mt-3 rounded-xl border border-line bg-cream-2 px-3.5 py-2.5 text-[13.5px] text-ink-2">
+                  <b className="text-ink">Sold out for today.</b> We make a fixed batch each morning — it’ll be back tomorrow. Try something from “Pairs well with” below.
+                </p>
+              )}
 
               <div className="mt-4 flex items-center justify-between gap-4">
                 <p className="font-display text-[28px] font-semibold tabular">{money(price)}</p>
@@ -226,8 +231,8 @@ function ProductView({ product }) {
               )}
 
               <div className="mt-7 hidden items-center gap-3 md:flex">
-                <Stepper value={qty} onChange={setQty} />
-                <AddButton added={added} onClick={handleAdd} total={price * qty} />
+                {!product.soldOut && <Stepper value={qty} onChange={setQty} />}
+                <AddButton added={added} onClick={handleAdd} total={price * qty} soldOut={product.soldOut} />
               </div>
               <p className="mt-3 hidden text-[13px] text-ink-3 md:block">Free delivery over $25 · Baked fresh to order</p>
             </motion.div>
@@ -256,15 +261,21 @@ function ProductView({ product }) {
       {/* Mobile sticky action bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 pt-3 backdrop-blur-lg pb-safe md:hidden">
         <div className="flex items-center gap-3">
-          <Stepper value={qty} onChange={setQty} />
-          <AddButton added={added} onClick={handleAdd} total={price * qty} />
+          {!product.soldOut && <Stepper value={qty} onChange={setQty} />}
+          <AddButton added={added} onClick={handleAdd} total={price * qty} soldOut={product.soldOut} />
         </div>
       </div>
     </div>
   )
 }
 
-function AddButton({ added, onClick, total }) {
+function AddButton({ added, onClick, total, soldOut }) {
+  if (soldOut)
+    return (
+      <Button size="lg" full disabled variant="dark" className="flex-1">
+        Sold out — back tomorrow
+      </Button>
+    )
   return (
     <Button onClick={onClick} size="lg" full className="flex-1 justify-between">
       <AnimatePresence mode="wait" initial={false}>

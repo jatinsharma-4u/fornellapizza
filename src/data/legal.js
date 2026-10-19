@@ -145,5 +145,6 @@ export const helpTopics = [
   { id: 'refunds', title: 'Refunds & cancellations', body: 'Cancel within 2 minutes, report missing or incorrect items.', to: '/refund-policy' },
   { id: 'account', title: 'Account & points', body: 'Update your details, addresses and Fornella Club points.', to: '/profile' },
   { id: 'payments', title: 'Payments & promo codes', body: 'Accepted payment methods and how discount codes work.', to: '/terms' },
+  { id: 'kitchen', title: 'Kitchen status', body: 'Is the kitchen busy or closed? See live wait times here.', to: '/kitchen-status' },
   { id: 'privacy', title: 'Privacy & data', body: 'How we use your data and how to delete your account.', to: '/privacy' },
 ]

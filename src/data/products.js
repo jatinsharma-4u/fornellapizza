@@ -110,6 +110,12 @@ products.forEach((x) => {
   x.veg = x.tags.includes('veg') || x.category === 'drinks' || x.category === 'desserts'
 })
 
+// Demo stock: these dishes have run out for today (shown greyed out, can't be added).
+export const soldOutIds = ['capricciosa', 'chicken-bucket', 'strawberry-cooler', 'berry-sundae']
+products.forEach((x) => {
+  x.soldOut = soldOutIds.includes(x.id)
+})
+
 export const optionsFor = (product) => {
   switch (product.category) {
     case 'pizza':
