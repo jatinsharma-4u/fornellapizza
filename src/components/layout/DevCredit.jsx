@@ -2,7 +2,7 @@ import { ArrowUpRight, Code } from '@phosphor-icons/react'
 
 const SITE = 'https://www.jatinsharma4u.in'
 
-/** Vertical "developed by" tab pinned to the right edge (tablet & desktop). */
+/** Small vertical "developed by" tab pinned to the right edge on every screen size. */
 export function DevSideTag() {
   return (
     <a
@@ -10,12 +10,12 @@ export function DevSideTag() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Developed by Jatin Sharma — opens jatinsharma4u.in in a new tab"
-      className="fixed top-1/2 right-0 z-[60] hidden items-center gap-2 rounded-r-xl bg-ink px-2 py-3.5 text-cream shadow-lift transition-[padding,background-color] duration-300 hover:bg-tomato hover:pr-3 focus-visible:bg-tomato md:flex"
+      className="fixed top-1/2 right-0 z-[60] flex items-center gap-1 leading-none md:gap-1.5 rounded-r-md bg-ink/85 md:rounded-r-lg md:bg-ink/90 pt-2 pr-1 pb-2 pl-1 text-cream shadow-soft backdrop-blur transition-colors duration-300 hover:bg-tomato focus-visible:bg-tomato md:pt-3 md:pr-2 md:pb-3 md:pl-2"
       style={{ writingMode: 'vertical-rl', transform: 'translateY(-50%) rotate(180deg)' }}
       data-no-print
     >
-      <Code size={15} weight="bold" className="shrink-0 rotate-90 text-saffron" />
-      <span className="text-[12px] font-semibold tracking-[0.06em] whitespace-nowrap">
+      <Code size={11} weight="bold" className="hidden shrink-0 rotate-90 text-saffron md:block" />
+      <span className="text-[8px] font-semibold tracking-[0.04em] whitespace-nowrap md:text-[10.5px]">
         Developed by <span className="text-saffron">Jatin Sharma</span>
       </span>
     </a>
