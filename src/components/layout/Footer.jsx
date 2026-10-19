@@ -5,6 +5,7 @@ import { categories, getProduct } from '../../data/products'
 import { brand } from '../../data/site'
 import { cn } from '../../lib/format'
 import { Logo } from '../ui/Bits'
+import { DevCreditLine } from './DevCredit'
 
 const quick = [
   ['Full menu', '/menu'],
@@ -131,7 +132,10 @@ export default function Footer({ padForTabs }) {
 
       <div className="border-t border-line">
         <div className="container-x flex flex-col gap-3 py-6 text-[13px] text-ink-3 md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Fornella Pizza Café. All rights reserved.</p>
+          <div className="flex flex-col gap-1 md:flex-row md:gap-4">
+            <p>© {new Date().getFullYear()} Fornella Pizza Café. All rights reserved.</p>
+            <DevCreditLine />
+          </div>
           <nav aria-label="Legal" className="flex flex-wrap gap-x-5 gap-y-1">
             <Link to="/privacy" className="hover:text-ink">Privacy</Link>
             <Link to="/terms" className="hover:text-ink">Terms</Link>

@@ -4,6 +4,7 @@ import { useLocation, useOutlet } from 'react-router-dom'
 import BottomNav from './BottomNav'
 import CartDrawer from './CartDrawer'
 import Footer from './Footer'
+import { DevSideTag } from './DevCredit'
 import Header from './Header'
 import { KitchenBanner } from './KitchenStatus'
 import { initSmoothScroll, scrollToTop } from '../../lib/smoothScroll'
@@ -66,6 +67,7 @@ export default function Layout() {
       {!isBare && <Footer padForTabs={!hideTabs} />}
       {!hideTabs && <BottomNav />}
       <CartDrawer />
+      <DevSideTag />
     </div>
   )
 }
