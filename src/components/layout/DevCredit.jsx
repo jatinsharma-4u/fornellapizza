@@ -2,7 +2,7 @@ import { ArrowUpRight, Code } from '@phosphor-icons/react'
 
 const SITE = 'https://www.jatinsharma4u.in'
 
-/** Small vertical "developed by" tab pinned to the right edge (desktop only). */
+/** Vertical "developed by" tab pinned to the right edge (tablet & desktop). */
 export function DevSideTag() {
   return (
     <a
@@ -10,14 +10,14 @@ export function DevSideTag() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Developed by Jatin Sharma — opens jatinsharma4u.in in a new tab"
-      className="group fixed top-1/2 right-0 z-[60] hidden -translate-y-1/2 translate-x-[calc(100%-36px)] items-center gap-2 rounded-l-xl bg-ink py-2.5 pr-3 pl-2.5 text-cream shadow-lift transition-transform duration-300 ease-out hover:translate-x-0 focus-visible:translate-x-0 md:flex"
+      className="fixed top-1/2 right-0 z-[60] hidden items-center gap-2 rounded-r-xl bg-ink px-2 py-3.5 text-cream shadow-lift transition-[padding,background-color] duration-300 hover:bg-tomato hover:pr-3 focus-visible:bg-tomato md:flex"
+      style={{ writingMode: 'vertical-rl', transform: 'translateY(-50%) rotate(180deg)' }}
       data-no-print
     >
-      <Code size={17} weight="bold" className="shrink-0 text-saffron" />
-      <span className="text-[12.5px] font-semibold whitespace-nowrap">
-        Developed by Jatin Sharma
+      <Code size={15} weight="bold" className="shrink-0 rotate-90 text-saffron" />
+      <span className="text-[12px] font-semibold tracking-[0.06em] whitespace-nowrap">
+        Developed by <span className="text-saffron">Jatin Sharma</span>
       </span>
-      <ArrowUpRight size={13} weight="bold" className="shrink-0 text-cream/60" />
     </a>
   )
 }
